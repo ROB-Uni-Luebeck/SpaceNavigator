@@ -226,13 +226,28 @@ bool SpaceNavigator::run(dataCallback dcb, buttonCallback bcb)
 		pImpl->dcb = dcb;
 		pImpl->motionThread = std::thread([&]
 		{
+			tSpNavData oldData;
 			tSpNavData data;
 			while (running)
 			{
 				// constantly poll the space navigator for analog data, timeout 100 msec
 				if (readSync(data, 100))
 				{
-					pImpl->dcb(data);
+					if (data.data[0] != oldData.data[0] ||    //debounce
+						data.data[1] != oldData.data[1] ||
+						data.data[2] != oldData.data[2] ||
+						data.data[3] != oldData.data[3] ||
+						data.data[4] != oldData.data[4] ||
+						data.data[5] != oldData.data[5])
+					{
+						pImpl->dcb(data);
+						oldData.data[0] = data.data[0];
+						oldData.data[1] = data.data[1];
+						oldData.data[2] = data.data[2];
+						oldData.data[3] = data.data[3];
+						oldData.data[4] = data.data[4];
+						oldData.data[5] = data.data[5];
+					}
 				}
 			}
 		});
@@ -251,9 +266,10 @@ bool SpaceNavigator::run(dataCallback dcb, buttonCallback bcb)
 				// constantly poll the space navigator for button changes, timeout 100 msec
 				if (readButtonsSync(buttons, 100))
 				{
-					if(buttons != oldButtons)
+					if (buttons != oldButtons) {
 						pImpl->bcb(buttons);
-					oldButtons = buttons;
+						oldButtons = buttons;
+					}
 				}
 			}
 		});
@@ -273,13 +289,28 @@ bool SpaceNavigator::run(dataCallback2 dcb, buttonCallback bcb)
 		pImpl->dcb2 = dcb;
 		pImpl->motionThread = std::thread([&]
 		{
+			tSpNavData oldData;
 			tSpNavData data;
 			while (running)
 			{
 				// constantly poll the space navigator for analog data, timeout 100 msec
 				if (readSync(data, 100))
-				{
-					pImpl->dcb2(data.data[0], data.data[1], data.data[2], data.data[3], data.data[4], data.data[5]);
+				{					
+					if (data.data[0] != oldData.data[0] ||    //debounce
+						data.data[1] != oldData.data[1] ||
+						data.data[2] != oldData.data[2] ||
+						data.data[3] != oldData.data[3] ||
+						data.data[4] != oldData.data[4] ||
+						data.data[5] != oldData.data[5])
+					{
+						pImpl->dcb2(data.data[0], data.data[1], data.data[2], data.data[3], data.data[4], data.data[5]);
+						oldData.data[0] = data.data[0];
+						oldData.data[1] = data.data[1];
+						oldData.data[2] = data.data[2];
+						oldData.data[3] = data.data[3];
+						oldData.data[4] = data.data[4];
+						oldData.data[5] = data.data[5];
+					}
 				}
 			}
 		});
@@ -298,9 +329,10 @@ bool SpaceNavigator::run(dataCallback2 dcb, buttonCallback bcb)
 				// constantly poll the space navigator for button changes, timeout 100 msec
 				if (readButtonsSync(buttons, 100))
 				{
-					if (buttons != oldButtons)
+					if (buttons != oldButtons) {
 						pImpl->bcb(buttons);
-					oldButtons = buttons;
+						oldButtons = buttons;
+					}
 				}
 			}
 		});
