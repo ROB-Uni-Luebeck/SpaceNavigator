@@ -34,6 +34,7 @@ namespace SpaceNavigatorCLI_sharp
 
         static void Main(string[] args)
         {
+            Console.WriteLine("SpaceNavigator demo\n\nPress ctrl+c or Button 2 on SpNav to quit. Button 1 will toggle the LED.\n\n");
             spNav = new clr_SpaceNavigator();
 
             short[] data = new short[6];
